@@ -150,6 +150,44 @@
   .kpi-value{font-size:30px;font-weight:800;letter-spacing:-.5px;}
   .kpi-value.small{font-size:26px;}
 
+  /* ===== BREADCRUMB (มุมมองรายช่องทาง) ===== */
+  .crumb-bar{display:none;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+  .crumb-bar.show{display:flex;}
+  .btn-back{
+    display:flex;align-items:center;gap:6px;padding:8px 14px;font-size:13px;font-weight:600;
+    background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;color:var(--text);
+  }
+  .btn-back:hover{background:var(--bg);}
+  .btn-back svg{width:14px;height:14px;}
+  .crumb-title{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700;}
+  .crumb-title .channel-dot{width:10px;height:10px;}
+  .crumb-sub{font-size:12.5px;color:var(--text-muted);width:100%;}
+
+  /* ===== CHANNEL CARDS (วันงาน / ออนไลน์) ===== */
+  .channel-block{margin-bottom:16px;}
+  .block-title{font-size:15px;font-weight:700;margin:4px 2px 10px;}
+  .channel-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .channel-card{
+    text-align:left;font:inherit;color:inherit;cursor:pointer;width:100%;
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+    padding:18px 20px;display:flex;flex-direction:column;gap:6px;
+    transition:border-color .15s, box-shadow .15s, transform .15s;
+  }
+  .channel-card:hover{border-color:var(--accent);box-shadow:0 4px 16px rgba(33,30,24,.07);}
+  .channel-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .channel-head{display:flex;align-items:center;gap:8px;}
+  .channel-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .channel-name{font-size:15px;font-weight:700;}
+  .channel-share{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--text-muted);
+    background:var(--bg);border:1px solid var(--border);border-radius:999px;padding:2px 9px;}
+  .channel-cat{font-size:12px;color:var(--text-faint);}
+  .channel-rev{font-size:28px;font-weight:800;letter-spacing:-.5px;margin-top:6px;}
+  .channel-meta{font-size:13px;color:var(--text-muted);}
+  .channel-bar{height:6px;background:var(--bg);border-radius:6px;overflow:hidden;margin-top:6px;}
+  .channel-bar > div{height:100%;border-radius:6px;}
+  .channel-foot{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-faint);margin-top:4px;}
+  .channel-go{margin-left:auto;font-weight:700;color:var(--accent);white-space:nowrap;}
+
   /* ===== CHART CARD ===== */
   .chart-card{
     background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
@@ -226,6 +264,7 @@
 
   @media (max-width:720px){
     .kpi-grid{grid-template-columns:1fr;}
+    .channel-grid{grid-template-columns:1fr;}
     .filter-label{min-width:0;width:100%;}
     .size-row{grid-template-columns:44px 1fr 56px 80px;}
     .cell-name{max-width:130px;}
@@ -289,20 +328,34 @@
     </div>
   </div>
 
+  <div class="crumb-bar" id="crumbBar">
+    <button class="btn-back" id="backBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      ภาพรวม
+    </button>
+    <div class="crumb-title"><span class="channel-dot" id="crumbDot"></span><span id="crumbName"></span></div>
+    <div class="crumb-sub" id="crumbSub"></div>
+  </div>
+
   <div class="kpi-grid">
     <div class="kpi-card">
-      <div class="kpi-label">ยอดขายรวม</div>
+      <div class="kpi-label" id="kpiRevenueLabel">ยอดขายรวม</div>
       <div class="kpi-value" id="kpiRevenue">–</div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-label">จำนวนที่ขายได้</div>
+      <div class="kpi-label" id="kpiQtyLabel">จำนวนที่ขายได้</div>
       <div class="kpi-value small" id="kpiQty">–</div>
     </div>
   </div>
 
+  <div class="channel-block" id="channelBlock">
+    <div class="block-title">แยกตามช่องทางการขาย <span style="font-weight:500;color:var(--text-faint);font-size:12.5px;">— กดเพื่อดูรายสินค้า</span></div>
+    <div class="channel-grid" id="channelGrid"></div>
+  </div>
+
   <div class="chart-card">
     <div class="chart-header">
-      <div class="chart-title">แนวโน้มยอดขาย</div>
+      <div class="chart-title" id="chartTitle">แนวโน้มยอดขาย</div>
       <div class="gran-toggle">
         <button id="granDayBtn" class="active">รายวัน</button>
         <button id="granWeekBtn">รายสัปดาห์</button>
@@ -312,8 +365,8 @@
     <div class="chart-wrap"><canvas id="movementChart"></canvas></div>
   </div>
 
-  <div class="table-card">
-    <div class="table-title">สินค้าที่ติดตาม</div>
+  <div class="table-card" id="tableCard" style="display:none;">
+    <div class="table-title" id="tableTitle">สินค้าที่ติดตาม</div>
     <div class="table-scroll">
       <table>
         <thead>
@@ -357,9 +410,25 @@ const PLATFORM_DEFS = {
 };
 const FALLBACK_COLOR = '#9C988C';
 
+// ช่องทางการขาย — แยกจากคอลัมน์ category ในแท็บ products
+// category ที่ขึ้นต้นด้วย "[Event]" = ขายวันงาน, นอกนั้น = เปิดขายออนไลน์
+const SECTION_DEFS = {
+  event:  {key:'event',  label:'วันงาน',  color:'#6C5CE7'},
+  online: {key:'online', label:'ออนไลน์', color:'#14A3A3'}
+};
+const SECTION_ORDER = ['event','online'];
+function sectionOfCategory(cat){
+  return /^\s*\[\s*event\s*\]/i.test(String(cat||'')) ? 'event' : 'online';
+}
+// ตัด prefix แท็กงานหน้าชื่อสินค้า เช่น "#ROFESTA26 | Storm Gust [Blue] Jersey" -> "Storm Gust [Blue] Jersey"
+function cleanProductName(n){ return String(n||'').replace(/^#\S+\s*\|\s*/, '').trim(); }
+
 // ===================== STATE =====================
 let productsMap = {};
 let familyMeta = {};
+let sectionMeta = {};      // section -> {category, familyCount}
+let sectionsPresent = [];  // ช่องทางที่มีสินค้าอยู่ในแท็บ products
+let currentSection = null; // null = ภาพรวม, 'event' | 'online' = ดูรายสินค้าของช่องทางนั้น
 let allSales = [];
 let platformList = [];
 let activePlatforms = new Set();
@@ -426,16 +495,24 @@ function hideError(){ document.getElementById('errorBanner').classList.remove('s
 
 // ===================== DATA PROCESSING =====================
 function buildProductsMeta(rows){
-  productsMap = {}; familyMeta = {};
+  productsMap = {}; familyMeta = {}; sectionMeta = {};
+  let hasCategory = false;
   rows.forEach(p=>{
     const sku = (p.sku==null?'':String(p.sku)).trim();
     if(!sku) return;
-    const family = ((p.sku_family==null?'':String(p.sku_family)).trim()) || sku;
+    const rawFamily = ((p.sku_family==null?'':String(p.sku_family)).trim()) || sku;
     const size = (p.size==null?'':String(p.size)).trim();
-    const name = (p.product_name==null?'':String(p.product_name)).trim();
+    const name = cleanProductName(p.product_name);
     const image = (p.image==null?'':String(p.image)).trim();
-    productsMap[sku] = {sku, family, size, name, image};
-    if(!familyMeta[family]) familyMeta[family] = {names:{}, sizes:new Set(), image:''};
+    const category = (p.category==null?'':String(p.category)).trim();
+    if(category) hasCategory = true;
+    const section = sectionOfCategory(category);
+    // sku_family เดียวกันมีทั้งฝั่งวันงานและออนไลน์ (คนละ SKU) จึงต้องแยก key ด้วยช่องทางด้วย
+    const family = section + '||' + rawFamily;
+    productsMap[sku] = {sku, family, size, name, image, section};
+    if(!sectionMeta[section]) sectionMeta[section] = {category, families:new Set()};
+    sectionMeta[section].families.add(family);
+    if(!familyMeta[family]) familyMeta[family] = {names:{}, sizes:new Set(), image:'', section};
     if(name) familyMeta[family].names[name] = (familyMeta[family].names[name]||0)+1;
     if(size) familyMeta[family].sizes.add(size);
     if(image && !familyMeta[family].image) familyMeta[family].image = image;
@@ -443,8 +520,12 @@ function buildProductsMeta(rows){
   Object.keys(familyMeta).forEach(fam=>{
     let best=null, bc=-1;
     Object.entries(familyMeta[fam].names).forEach(([n,c])=>{ if(c>bc){best=n;bc=c;} });
-    familyMeta[fam].displayName = best || fam;
+    familyMeta[fam].displayName = best || fam.split('||')[1];
   });
+  sectionsPresent = SECTION_ORDER.filter(k=>sectionMeta[k]);
+  if(!hasCategory){
+    showError('ข้อมูลที่ได้จาก API ยังไม่มีคอลัมน์ category จึงแยกวันงาน/ออนไลน์ไม่ได้ — อัปเดต Code.gs เป็นเวอร์ชันใหม่ แล้ว Deploy เป็น New version');
+  }
 }
 
 function buildSales(rows){
@@ -461,7 +542,7 @@ function buildSales(rows){
     const key = rawPlatform.toLowerCase();
     if(discovered[key]===undefined) discovered[key]=rawPlatform;
     allSales.push({
-      date:d, platformKey:key, sku, family:meta.family, size:meta.size,
+      date:d, platformKey:key, sku, family:meta.family, size:meta.size, section:meta.section,
       qty:Number(r.qty)||0, revenue:Number(r.revenue)||0
     });
   });
@@ -551,15 +632,63 @@ function toggleGranBtns(){
 }
 
 // ===================== RENDER =====================
+// ===================== VIEW (ภาพรวม <-> รายช่องทาง) =====================
+function sectionFromHash(){
+  const k = decodeURIComponent((location.hash||'').replace(/^#/,''));
+  return sectionsPresent.indexOf(k)>=0 ? k : null;
+}
+function goSection(k){
+  const target = k && sectionsPresent.indexOf(k)>=0 ? k : null;
+  if(target===currentSection) return;
+  currentSection = target;
+  history.pushState(null, '', target ? '#'+target : location.pathname+location.search);
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+window.addEventListener('popstate', ()=>{
+  if(!allSales.length) return;
+  currentSection = sectionFromHash();
+  render();
+});
+document.getElementById('backBtn').addEventListener('click', ()=> goSection(null));
+document.getElementById('channelGrid').addEventListener('click', e=>{
+  const card = e.target.closest('.channel-card');
+  if(card) goSection(card.dataset.section);
+});
+
+function applyViewChrome(){
+  const inSection = !!currentSection;
+  const def = inSection ? SECTION_DEFS[currentSection] : null;
+  document.getElementById('crumbBar').classList.toggle('show', inSection);
+  document.getElementById('channelBlock').style.display = inSection ? 'none' : '';
+  document.getElementById('tableCard').style.display = inSection ? '' : 'none';
+  if(inSection){
+    document.getElementById('crumbDot').style.background = def.color;
+    document.getElementById('crumbName').textContent = 'ยอดขาย' + def.label;
+    document.getElementById('crumbSub').textContent = (sectionMeta[currentSection]||{}).category || '';
+    document.getElementById('kpiRevenueLabel').textContent = 'ยอดขายรวม — ' + def.label;
+    document.getElementById('kpiQtyLabel').textContent = 'จำนวนที่ขายได้ — ' + def.label;
+    document.getElementById('chartTitle').textContent = 'แนวโน้มยอดขาย — ' + def.label;
+    document.getElementById('tableTitle').textContent = 'สินค้า — ' + def.label;
+  } else {
+    document.getElementById('kpiRevenueLabel').textContent = 'ยอดขายรวม (ทุกช่องทาง)';
+    document.getElementById('kpiQtyLabel').textContent = 'จำนวนที่ขายได้ (ทุกช่องทาง)';
+    document.getElementById('chartTitle').textContent = 'แนวโน้มยอดขาย แยกตามช่องทาง';
+  }
+}
+
 function render(){
-  const rows = allSales.filter(r =>
+  const inRange = allSales.filter(r =>
     r.date>=filterStart && r.date<=filterEnd && activePlatforms.has(r.platformKey)
   );
+  const rows = currentSection ? inRange.filter(r=>r.section===currentSection) : inRange;
   lastFilteredRows = rows;
+  applyViewChrome();
   renderKPIs(rows);
+  if(!currentSection) renderChannelCards(inRange);
   try{ renderMovementChart(rows); }
   catch(err){ console.error('กราฟแนวโน้มยอดขายมีปัญหา:', err); }
-  renderProductTable(rows);
+  if(currentSection) renderProductTable(rows);
 }
 
 function renderKPIs(rows){
@@ -569,8 +698,41 @@ function renderKPIs(rows){
   document.getElementById('kpiQty').textContent = fmtNum(qty)+' ชิ้น';
 }
 
+function renderChannelCards(rows){
+  const total = rows.reduce((s,r)=>s+r.revenue,0);
+  document.getElementById('channelGrid').innerHTML = sectionsPresent.map(k=>{
+    const def = SECTION_DEFS[k];
+    const rs = rows.filter(r=>r.section===k);
+    const rev = rs.reduce((s,r)=>s+r.revenue,0);
+    const qty = rs.reduce((s,r)=>s+r.qty,0);
+    const share = total>0 ? rev/total*100 : 0;
+    const soldFams = new Set(rs.filter(r=>r.qty>0).map(r=>r.family)).size;
+    const allFams = sectionMeta[k].families.size;
+    let first=null, last=null;
+    rs.forEach(r=>{ if(!first||r.date<first)first=r.date; if(!last||r.date>last)last=r.date; });
+    const dateText = !first ? 'ยังไม่มียอดขายในช่วงนี้'
+      : (first.getTime()===last.getTime() ? 'ขายวันที่ '+fmtDateTH(first) : fmtDateTH(first)+' – '+fmtDateTH(last));
+    return `<button type="button" class="channel-card" data-section="${k}">
+      <div class="channel-head">
+        <span class="channel-dot" style="background:${def.color}"></span>
+        <span class="channel-name">${escapeHtml(def.label)}</span>
+        <span class="channel-share">${share.toFixed(0)}%</span>
+      </div>
+      <div class="channel-cat">${escapeHtml(sectionMeta[k].category)}</div>
+      <div class="channel-rev">${fmtBaht(rev)}</div>
+      <div class="channel-meta">${fmtNum(qty)} ชิ้น · ${soldFams}/${allFams} สินค้ามียอดขาย</div>
+      <div class="channel-bar"><div style="width:${share.toFixed(1)}%;background:${def.color}"></div></div>
+      <div class="channel-foot"><span>${dateText}</span><span class="channel-go">ดูรายสินค้า →</span></div>
+    </button>`;
+  }).join('');
+}
+
 function renderMovementChart(rows){
-  const active = platformList.filter(p=>activePlatforms.has(p.key));
+  // ภาพรวม: แท่งแยกสีตามช่องทาง (วันงาน/ออนไลน์) | รายช่องทาง: แยกสีตามแพลตฟอร์มเหมือนเดิม
+  const series = currentSection
+    ? platformList.filter(p=>activePlatforms.has(p.key)).map(p=>({key:p.key,label:p.label,color:p.color,keyOf:r=>r.platformKey}))
+    : sectionsPresent.map(k=>({key:k,label:SECTION_DEFS[k].label,color:SECTION_DEFS[k].color,keyOf:r=>r.section}));
+  const active = series;
   document.getElementById('chartLegend').innerHTML = active.map(p=>
     `<div class="legend-item"><span class="dot" style="background:${p.color}"></span>${escapeHtml(p.label)}</div>`
   ).join('');
@@ -580,11 +742,13 @@ function renderMovementChart(rows){
   const bucketKeys = buckets.map(b=>b.getTime());
   const sums = {};
   active.forEach(p=> sums[p.key] = new Array(buckets.length).fill(0));
+  const keyOf = active.length ? active[0].keyOf : (r=>null);
   rows.forEach(r=>{
-    if(!sums[r.platformKey]) return;
+    const sk = keyOf(r);
+    if(!sums[sk]) return;
     const bk = bucketKeyOf(r.date, chartGranularity);
     const idx = bucketKeys.indexOf(bk);
-    if(idx>=0) sums[r.platformKey][idx]+=r.revenue;
+    if(idx>=0) sums[sk][idx]+=r.revenue;
   });
   const labels = buckets.map(b => chartGranularity==='week' ? ('สัปดาห์ '+fmtDateTH(b)) : fmtDateTH(b));
   const datasets = active.map(p=>({
@@ -676,7 +840,8 @@ function openModal(family){
   const maxQty = Math.max(1, ...sizeList.map(s=>s.qty));
 
   document.getElementById('modalTitle').textContent = meta.displayName || family;
-  document.getElementById('modalSubtitle').textContent = fmtNum(totalQty)+' ชิ้น • '+fmtBaht(totalRevenue);
+  const secLabel = meta.section && SECTION_DEFS[meta.section] ? SECTION_DEFS[meta.section].label + ' • ' : '';
+  document.getElementById('modalSubtitle').textContent = secLabel + fmtNum(totalQty)+' ชิ้น • '+fmtBaht(totalRevenue);
   document.getElementById('modalBody').innerHTML = sizeList.length ? sizeList.map(s => `
     <div class="size-row">
       <div class="size-label">${escapeHtml(s.sz)}</div>
@@ -711,7 +876,9 @@ function applyServerData(data){
     throw new Error('ไม่พบแถวยอดขายที่มี SKU ตรงกับแท็บ products — ตรวจสอบว่า SKU ในสองแท็บสะกดตรงกัน');
   }
   computeDataBounds();
+  if(currentSection && sectionsPresent.indexOf(currentSection)===-1) currentSection = null;
   if(firstLoad){
+    currentSection = sectionFromHash(); // เปิดลิงก์ ...#event / ...#online ตรงๆ ได้
     activePlatforms = new Set(platformList.map(p=>p.key));
     initPlatformChips();
     setPreset('30');
